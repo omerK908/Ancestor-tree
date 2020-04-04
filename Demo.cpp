@@ -28,7 +28,6 @@ int main() {
 	cout << T.relation("Terah") << endl;  // prints "great-great-grandfather"
 	cout << T.relation("xyz") << endl;  // prints "unrelated"
 	cout << T.relation("Yosef") << endl;  // prints "me"
-
 	cout << T.find("mother") << endl;  // prints "Rachel"
 	cout << T.find("great-great-grandfather") << endl;  // prints "Avraham"
 	try {

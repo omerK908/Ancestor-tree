@@ -4,9 +4,16 @@
 using namespace std;
 
 namespace family{
+
+    class Node{
+        Node* father;
+        Node* mother;
+        string name;
+    };
     
     class Tree{
         public:
+            Node root;
             Tree();
             Tree(string name);
             Tree addFather(string childName, string fatherName);
@@ -18,3 +25,4 @@ namespace family{
 
     };
 }
+
