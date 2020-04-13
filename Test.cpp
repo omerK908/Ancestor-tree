@@ -12,6 +12,8 @@ TEST_CASE("relation case test") {
             .addFather("Avraham", "Terah")
             .addMother("Rivka", "Sisra");
 
+    
+    CHECK( T.relation("Yosef") == "me" );
     CHECK( T.relation("Yaakov") == "father" );
     CHECK( T.relation("Rachel") == "mother" );
     CHECK( T.relation("Isaac") == "grandfather" );
