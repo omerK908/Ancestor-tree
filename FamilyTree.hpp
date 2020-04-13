@@ -24,6 +24,7 @@ namespace family{
             father = NULL;
             mother = NULL;
         }
+        ~Node();
         string getName(){
             return this->name;
         }
@@ -64,6 +65,7 @@ namespace family{
         void remove(string name);
         void add(Node* root ,string name, string parent,bool g);
         void printTree(Node* root);
+        Node* findNode(Node* root, string name);
 
     };
 }

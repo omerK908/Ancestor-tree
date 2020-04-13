@@ -50,14 +50,37 @@ string family::Tree::relation(string name)
     return "";
 }
 
-string family::Tree::find(string name)
+string family::Tree::find(string relation)
 {
     return "";
 }
 
 void family::Tree::remove(string name)
 {
+    Node* tmp = findNode(root, name);
+    if(tmp == NULL)return;
+    
+}
 
+Node* family::Tree::findNode(Node* root, string name)
+{
+    if (root == NULL) 
+        return NULL; 
+  
+    if (root->getName() == name) 
+        return root;
+  
+    /* then recur on father sutree */
+    Node* res1 = findNode(root->getFather(), name); 
+  
+    if(res1 != NULL) return res1; // node found, no need to look further 
+
+    /* node is not found in father, so recur on right subtree */
+    Node* res2 = findNode(root->getMother(), name); 
+
+    return res2; 
+    
+    
 }
 
 void family::Tree::add(Node* root ,string name, string parent,bool g){
