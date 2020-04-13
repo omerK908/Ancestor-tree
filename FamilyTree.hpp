@@ -6,22 +6,64 @@ using namespace std;
 namespace family{
 
     class Node{
+        
         Node* father;
         Node* mother;
         string name;
+
+        public:
+        Node()
+        {
+            name = "";
+            father = NULL;
+            mother = NULL;
+        }
+        Node(string name)
+        {
+            this->name = name;
+            father = NULL;
+            mother = NULL;
+        }
+        string getName(){
+            return this->name;
+        }
+        Node* getMother(){
+            return this->mother;
+        }
+        Node* getFather(){
+            return this->father;
+        }
+        void setNode(string parent, bool g) //false = mother, true = father
+        {
+            if(g == true)
+            {
+                Node* ans = new Node(parent);
+                this->father = ans;
+            }
+            else
+            {
+                Node* ans = new Node(parent);
+                this->mother = ans;
+            }
+        }
     };
     
     class Tree{
+        Node* root;
         public:
-            Node root;
-            Tree();
-            Tree(string name);
-            Tree addFather(string childName, string fatherName);
-            Tree addMother(string childName, string motherName);
-            string relation(string name);
-            string find(string relation);
-            void display();
-            void remove(string name);
+        
+        Tree(string name)
+        {
+            this->root = new Node(name);
+        }
+        Tree& addFather(string name, string father);
+        Tree& addMother(string name, string mother);
+        string relation(string name);
+        string find(string relation);
+        void display();
+        void remove(string name);
+        void add(Node* root ,string name, string parent,bool g);
+        void printTree(Node* root);
 
     };
 }
