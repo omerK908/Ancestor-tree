@@ -147,178 +147,118 @@ Node *Tree::findNode(Node *root, string name) {
 
 }
 
-
 /**
  * given a relation string method should return the name of the node who's in this relation.
  * @param relation - father/mother , grandfather/grandmother , great-grandfather/great-grandmother, ..etc.
  * @return string the name of this node who's associated with this given relation.
  */
-
 string Tree::find(string relation) {
-    
-    if(relation == "me") return _root->getName();
+    Node* fatherSide;
+    Node* motherSide;
+    string ans;
+    if(relation == "me") ans = _root->getName();
     else if(relation == "father")
     {
         if(_root->getFather() != NULL)
-            return _root->getFather()->getName();
+            ans = _root->getFather()->getName();
         else throw "No relation in the tree\n";
     } 
     else if(relation == "mother"){
         if(_root->getMother() != NULL)
-            return _root->getMother()->getName();
+            ans = _root->getMother()->getName();
         else throw "No relation in the tree\n";
-    } 
-
-    string delimiter = "-";
-    size_t pos = 0;
-    string token;
-    int countGreat = 0;
-    while ((pos = relation.find(delimiter)) != std::string::npos) {
-        // token = relation.substr(0, pos);
-        // std::cout << token << std::endl;
-        relation.erase(0, pos + delimiter.length());
-        countGreat++;
     }
-   
-    if(relation == "grandfather")
+    else if(relation == "grandfather")
     {
-        if(countGreat > 0)
-        {
-            Node* ans = getNodeByRel(_root, countGreat, true);
-            if(ans == NULL) throw "No relation in the tree\n";
-            else return ans->getName();
+        if(_root->getFather() != NULL){
+            fatherSide = _root->getFather();
+            fatherSide = fatherSide->getFather();
         }
-        else
-        {
-            Node* tmp1;
-            Node* tmp2;
-            if(_root->getFather() != NULL)
-            {
-                tmp1 = _root->getFather();
-                tmp1 = tmp1->getFather();
-            }
-            
-            if(_root->getMother() != NULL)
-            {
-                tmp2 = _root->getMother();
-                tmp2 = tmp1->getFather();
-            }
-            if(tmp1 != NULL)return tmp1->getName();
-            else if(tmp2 != NULL) return tmp2->getName();
-            else throw "No relation in the tree\n";
+        if(_root->getMother() != NULL){
+            motherSide = _root->getMother();
+            motherSide = motherSide->getFather();
         }
-        throw "No relation in the tree\n";
+        if(fatherSide != NULL) ans = fatherSide->getName();
+        else if (motherSide != NULL) ans = motherSide->getName();
+        else throw runtime_error("No relation");
     }
-    if(relation == "grandmother")
+    else if(relation == "grandMother")
     {
-        if(countGreat > 0)
-        {
-            Node* ans = getNodeByRel(_root, countGreat, false);
-            if(ans == NULL) throw "No relation in the tree\n";
-            else return ans->getName();
+        if(_root->getFather() != NULL){
+            fatherSide = _root->getFather();
+            fatherSide = fatherSide->getMother();
         }
-        else
-        {
-            Node* tmp1;
-            Node* tmp2;
-            if(_root->getFather() != NULL)
-            {
-                tmp1 = _root->getFather();
-                tmp1 = tmp1->getMother();
-            }
-            
-            if(_root->getMother() != NULL)
-            {
-                tmp2 = _root->getMother();
-                tmp2 = tmp1->getMother();
-            }
-            if(tmp1 != NULL)return tmp1->getName();
-            else if(tmp2 != NULL) return tmp2->getName();
-            else throw "No relation in the tree << endl";
+        if(_root->getMother() != NULL){
+            motherSide = _root->getMother();
+            motherSide = motherSide->getMother();
         }
-        throw "No relation in the tree\n";
+        if(fatherSide != NULL) ans = fatherSide->getName();
+        else if (motherSide != NULL) ans = motherSide->getName();
+        else throw runtime_error("No relation");
     }
-    else throw "No relation in the tree\n"; //no grandmother of grandfather
+    else
+    {
+        string delimiter = "-";
+        size_t pos = 0;
+        string token;
+        int countGreat = 0;
+        while ((pos = relation.find(delimiter)) != std::string::npos) {
+            relation.erase(0, pos + delimiter.length());
+            countGreat++;
+        }
+        bool gender;
+        if(relation == "grandfather") gender = true;
+        else if (relation == "grandmother") gender = false;
+        else throw runtime_error("No relation");
+        Node* tmp = getNodeByHeight(_root, countGreat + 2, gender);
+        if(tmp == NULL) throw runtime_error("No relation");
+        else ans = tmp->getName();
+        
+    }
+    return ans;
+    
 }
 
-Node* Tree::getNodeByRel(Node* root, int count, bool gender)
+Node* Tree::getNodeByHeight(Node* root, int count, bool gender)
 {
+    if(count == 0) return root;
+    else if (count == 1 && root != NULL)
+    {
+        
+        if(gender) return root->getFather();
+        else return root->getMother();
+        
+    }
+    Node* fatherSide = NULL;
+    Node* motherSide = NULL;
     if(root != NULL)
     {
-        if (count < 0) return NULL;
-        else if (count == 0)
-        {
-            Node* tmp1;
-            Node* tmp2;
-            
-            if(gender)
-            {
-               
-                if(root->getFather() != NULL)
-                {
-                    tmp1 = root->getFather();
-                    tmp1 = tmp1->getFather();
-                }
-                if(root->getMother() != NULL)
-                {
-                    tmp2 = root->getMother();
-                    tmp2 = tmp2->getFather();
-                }
-                
-            }
-            else
-            {
-                
-                if(root->getFather() != NULL)
-                {
-                    tmp1 = root->getFather();
-                    tmp1 = tmp1->getMother();
-                }
-                if(root->getMother() != NULL)
-                {
-                    tmp2 = root->getMother();
-                    tmp2 = tmp2->getMother();
-                }
-                
-            }
-            if(tmp1 != NULL) return tmp1;
-            return tmp2;
-            
-        } 
-        else
-        {
-            Node* f = getNodeByRel(root->getFather(), count - 1, gender);
-            Node* m = getNodeByRel(root->getMother(), count - 1, gender);
-            if(f != NULL) return f;
-            if(m != NULL) cout <<"find: " << m->getName();
-            return m;
-        }
+        fatherSide = getNodeByHeight(root->getFather(), count - 1, gender);
+        motherSide = getNodeByHeight(root->getMother(), count - 1, gender);
     }
-    return NULL;
+    
+    if(fatherSide != NULL) return fatherSide;
+    return motherSide;
+    
 }
 
-
-// string Tree::nodeNameAtHeight(Node *node, int heightAns, bool gender) {
-//     if (node == NULL)return "";
-//     if (getLevel(node, node->getName()) == heightAns && node->getGender() == gender)return node->getName();
-//     if (gender) {
-//         if (getLevel(node, node->getName()) == heightAns && node->getGender() == gender)return node->getName();
-//         else if (node->getFather() != NULL) {
-//             nodeNameAtHeight(node->getFather(), heightAns, gender);
-//             nodeNameAtHeight(node->getMother(), heightAns, gender);
-//         }
-//     }
-//     else {
-//         if (getLevel(node, node->getName()) == heightAns && node->getGender() == gender)return node->getName();
-//         else if (node->getMother() != NULL) {
-//             nodeNameAtHeight(node->getMother(), heightAns, gender);
-//             nodeNameAtHeight(node->getFather(), heightAns, gender);
-//         }
-        
-//     }
-//     return "";
-// }
-
+string Tree::nodeNameAtHeight(Node *node, int heightAns, bool gender) {
+    if (node == NULL)return "";
+    if ((getLevel(node, node->getName()) == heightAns) && (node->getGender() == gender))return node->getName();
+    if (gender) {
+        if ((getLevel(node, node->getName()) == heightAns) && (node->getGender() == gender))return node->getName();
+        else if (node->getFather() != NULL) {
+            nodeNameAtHeight(node->getFather(), heightAns, gender);
+            nodeNameAtHeight(node->getMother(), heightAns, gender);
+        }
+    } else {
+        if ((getLevel(node, node->getName()) == heightAns) && (node->getGender() == gender))return node->getName();
+        else if (node->getMother() != NULL) {
+            nodeNameAtHeight(node->getMother(), heightAns, gender);
+            nodeNameAtHeight(node->getFather(), heightAns, gender);
+        }
+    }
+}
 
 /**
  * remove a tree(if root is given, except for the root) or a subtree from the tree.
@@ -326,11 +266,11 @@ Node* Tree::getNodeByRel(Node* root, int count, bool gender)
  */
 void Tree::remove(string name) {
 
-    if (findNode(_root, name) == NULL)throw "Cannot remove an empty name from the tree!!\n";
+    if (name == "" || name == " ")throw "Cannot remove an empty name from the tree!!\n";
     Node *tmp = nullptr;
-    if (_root->getName() == name)
+    if (_root->getName() == name && _root->getFather() == NULL && _root->getMother() == NULL)
         throw runtime_error("cannot delete the root node " + _root->getName() + "\n");
-    else if ((_root->getName() == name && _root->getFather() != NULL) || _root->getMother() != NULL) {
+    else if ((_root->getName() == name) && (_root->getFather() != NULL || _root->getMother() != NULL)) {
         if (_root->getFather() != NULL) {
             tmp = findNode(_root->getFather(), name);
             if (tmp != NULL) {
@@ -365,15 +305,17 @@ void Tree::deleteSubTree(Node *root) {
     if (root == NULL) return;
     //deleting all subtree of the node.
     if (root->getFather() != NULL) {
+
         deleteSubTree(root->getFather());
     }
     if (root->getMother() != NULL) {
         deleteSubTree(root->getMother());
+
     }
 
     //then delete the root node of this subtree.
     cout << "\n Deleting node: " << root->getName() << endl;
-    delete root;
+    free(root);
 }
 
 /**
@@ -384,34 +326,19 @@ void Tree::deleteSubTree(Node *root) {
  * @param gender is the parent gender.
  */
 void Tree::add(Node *root, string name, string parent, bool gender) {
-    
-    Node* tmp = findNode(_root, name);
-    if(tmp == NULL) throw runtime_error("not exist\n");
-    if(gender)
-    {
-        if(tmp->getFather() != NULL)throw runtime_error("father exist\n");
+    if (root != NULL && gender == true && root->getName() == name && root->getFather() == NULL) {
+        root->setNode(parent, gender);
+        //treeMap.insert(pair<int, Node*>({ getLevel(root->getFather(),root->getFather()->getName()) , root->getFather()}));
+        return;
     }
-    else
-    {
-        if(tmp->getMother() != NULL)throw runtime_error("mother exist\n");
+    if (root != NULL && gender == false && root->getName() == name && root->getMother() == NULL) {
+        root->setNode(parent, gender);
+        //treeMap.insert(pair<int, Node*>({ getLevel(root->getMother(), root->getMother()->getName()), root->getMother()}));
+        return;
     }
-    tmp->setNode(parent, gender);
-    
-    
-    
-
-    // if (root != NULL && gender == true && root->getName() == name && root->getFather() == NULL) {
-    //     root->setNode(parent, gender);
-    //     return;
-    // }
-    // if (root != NULL && gender == false && root->getName() == name && root->getMother() == NULL) {
-    //     root->setNode(parent, gender);
-    //     return;
-    // }
-    // if (root != NULL) {
-    //     add(root->getMother(), name, parent, gender);
-    //     add(root->getFather(), name, parent, gender);
-    // }
-    // return;
-
+    if (root != NULL) {
+        add(root->getMother(), name, parent, gender);
+        add(root->getFather(), name, parent, gender);
+    }
+    return;
 }

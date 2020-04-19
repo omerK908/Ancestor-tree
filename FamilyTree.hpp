@@ -1,5 +1,14 @@
+//
+// Created by miros on 17/04/2020.
+//
+
+
+
 #pragma once
+#include<map>
+#include<vector>
 #include<string>
+#include <bits/stdc++.h>
 #include <iostream>
 using namespace std;
 
@@ -22,14 +31,10 @@ namespace family{
             mother = NULL;
             _gender = gender;
         }
-        
         ~Node(){
-            if(father != nullptr)
-                delete father;
-            if(mother != nullptr)
-                delete mother;
-            //delete this;
-        };
+            this->father = NULL;
+            this->mother = NULL;
+        }
         string getName(){
             return this->name;
         }
@@ -67,7 +72,6 @@ namespace family{
         {
             this->_root = new Node(name,true);
         }
-        
         Tree& addFather(string name, string father);
         Tree& addMother(string name, string mother);
         string relation(string name);
@@ -81,7 +85,8 @@ namespace family{
         int getLevelUtil(Node *node, string name, int level);
         Node* findNode(Node* root, string name);
         string nodeNameAtHeight(Node* node,int heightAns ,bool gender);
-        Node* getNodeByRel(Node* root, int count, bool gender);
+        Node* getNodeByHeight(Node* root, int count, bool gender);
 
     };
 }
+
