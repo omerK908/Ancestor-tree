@@ -22,7 +22,14 @@ namespace family{
             mother = NULL;
             _gender = gender;
         }
-        ~Node();
+        
+        ~Node(){
+            if(father != nullptr)
+                delete father;
+            if(mother != nullptr)
+                delete mother;
+            //delete this;
+        };
         string getName(){
             return this->name;
         }
@@ -60,6 +67,7 @@ namespace family{
         {
             this->_root = new Node(name,true);
         }
+        
         Tree& addFather(string name, string father);
         Tree& addMother(string name, string mother);
         string relation(string name);

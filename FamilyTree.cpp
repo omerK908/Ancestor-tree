@@ -147,12 +147,15 @@ Node *Tree::findNode(Node *root, string name) {
 
 }
 
+
 /**
  * given a relation string method should return the name of the node who's in this relation.
  * @param relation - father/mother , grandfather/grandmother , great-grandfather/great-grandmother, ..etc.
  * @return string the name of this node who's associated with this given relation.
  */
+
 string Tree::find(string relation) {
+    
     if(relation == "me") return _root->getName();
     else if(relation == "father")
     {
@@ -231,11 +234,11 @@ string Tree::find(string relation) {
             }
             if(tmp1 != NULL)return tmp1->getName();
             else if(tmp2 != NULL) return tmp2->getName();
-            else throw "No relation in the tree\n";
+            else throw "No relation in the tree << endl";
         }
         throw "No relation in the tree\n";
     }
-    throw "No relation in the tree\n";
+    else throw "No relation in the tree\n"; //no grandmother of grandfather
 }
 
 Node* Tree::getNodeByRel(Node* root, int count, bool gender)
@@ -295,23 +298,26 @@ Node* Tree::getNodeByRel(Node* root, int count, bool gender)
 }
 
 
-string Tree::nodeNameAtHeight(Node *node, int heightAns, bool gender) {
-    if (node == NULL)return "";
-    if (getLevel(node, node->getName()) == heightAns && node->getGender() == gender)return node->getName();
-    if (gender) {
-        if (getLevel(node, node->getName()) == heightAns && node->getGender() == gender)return node->getName();
-        else if (node->getFather() != NULL) {
-            nodeNameAtHeight(node->getFather(), heightAns, gender);
-            nodeNameAtHeight(node->getMother(), heightAns, gender);
-        }
-    } else {
-        if (getLevel(node, node->getName()) == heightAns && node->getGender() == gender)return node->getName();
-        else if (node->getMother() != NULL) {
-            nodeNameAtHeight(node->getMother(), heightAns, gender);
-            nodeNameAtHeight(node->getFather(), heightAns, gender);
-        }
-    }
-}
+// string Tree::nodeNameAtHeight(Node *node, int heightAns, bool gender) {
+//     if (node == NULL)return "";
+//     if (getLevel(node, node->getName()) == heightAns && node->getGender() == gender)return node->getName();
+//     if (gender) {
+//         if (getLevel(node, node->getName()) == heightAns && node->getGender() == gender)return node->getName();
+//         else if (node->getFather() != NULL) {
+//             nodeNameAtHeight(node->getFather(), heightAns, gender);
+//             nodeNameAtHeight(node->getMother(), heightAns, gender);
+//         }
+//     }
+//     else {
+//         if (getLevel(node, node->getName()) == heightAns && node->getGender() == gender)return node->getName();
+//         else if (node->getMother() != NULL) {
+//             nodeNameAtHeight(node->getMother(), heightAns, gender);
+//             nodeNameAtHeight(node->getFather(), heightAns, gender);
+//         }
+        
+//     }
+//     return "";
+// }
 
 
 /**
@@ -320,11 +326,11 @@ string Tree::nodeNameAtHeight(Node *node, int heightAns, bool gender) {
  */
 void Tree::remove(string name) {
 
-    if (name == "" || name == " " || findNode(_root, name) == NULL)throw "Cannot remove an empty name from the tree!!\n";
+    if (findNode(_root, name) == NULL)throw "Cannot remove an empty name from the tree!!\n";
     Node *tmp = nullptr;
-    if (_root->getName() == name && _root->getFather() == NULL && _root->getMother() == NULL)
+    if (_root->getName() == name)
         throw runtime_error("cannot delete the root node " + _root->getName() + "\n");
-    else if (_root->getName() == name && _root->getFather() != NULL || _root->getMother() != NULL) {
+    else if ((_root->getName() == name && _root->getFather() != NULL) || _root->getMother() != NULL) {
         if (_root->getFather() != NULL) {
             tmp = findNode(_root->getFather(), name);
             if (tmp != NULL) {
@@ -367,7 +373,7 @@ void Tree::deleteSubTree(Node *root) {
 
     //then delete the root node of this subtree.
     cout << "\n Deleting node: " << root->getName() << endl;
-    free(root);
+    delete root;
 }
 
 /**
@@ -378,17 +384,34 @@ void Tree::deleteSubTree(Node *root) {
  * @param gender is the parent gender.
  */
 void Tree::add(Node *root, string name, string parent, bool gender) {
-    if (root != NULL && gender == true && root->getName() == name && root->getFather() == NULL) {
-        root->setNode(parent, gender);
-        return;
+    
+    Node* tmp = findNode(_root, name);
+    if(tmp == NULL) throw runtime_error("not exist\n");
+    if(gender)
+    {
+        if(tmp->getFather() != NULL)throw runtime_error("father exist\n");
     }
-    if (root != NULL && gender == false && root->getName() == name && root->getMother() == NULL) {
-        root->setNode(parent, gender);
-        return;
+    else
+    {
+        if(tmp->getMother() != NULL)throw runtime_error("mother exist\n");
     }
-    if (root != NULL) {
-        add(root->getMother(), name, parent, gender);
-        add(root->getFather(), name, parent, gender);
-    }
-    return;
+    tmp->setNode(parent, gender);
+    
+    
+    
+
+    // if (root != NULL && gender == true && root->getName() == name && root->getFather() == NULL) {
+    //     root->setNode(parent, gender);
+    //     return;
+    // }
+    // if (root != NULL && gender == false && root->getName() == name && root->getMother() == NULL) {
+    //     root->setNode(parent, gender);
+    //     return;
+    // }
+    // if (root != NULL) {
+    //     add(root->getMother(), name, parent, gender);
+    //     add(root->getFather(), name, parent, gender);
+    // }
+    // return;
+
 }
