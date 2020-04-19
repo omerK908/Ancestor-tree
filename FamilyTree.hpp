@@ -72,6 +72,8 @@ namespace family{
         int getLevel(Node *node, string name);
         int getLevelUtil(Node *node, string name, int level);
         Node* findNode(Node* root, string name);
+        string nodeNameAtHeight(Node* node,int heightAns ,bool gender);
+        Node* getNodeByRel(Node* root, int count, bool gender);
 
     };
 }
