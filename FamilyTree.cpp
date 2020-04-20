@@ -335,7 +335,7 @@ string Tree::nodeNameAtHeight(Node *node, int heightAns, bool gender)
 void Tree::remove(string name)
 {
     if (this->_root->getName() == name)
-        throw runtime_error("Root can't be deleted, please try again \n ");
+        throw runtime_error("Root can't be deleted\n");
     Node *removeNode = NULL;
     Node *runNode = NULL;
     findSubTree(this->_root, name, &removeNode); //find the subtree we want to delete.
